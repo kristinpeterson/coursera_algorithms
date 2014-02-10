@@ -24,7 +24,7 @@ When N is sufficiently large, there is a threshold value p* such that when p < p
 
 Percolation data type. To model a percolation system, create a data type Percolation with the following API:
 
-'''java
+```java
 public class Percolation {
    public Percolation(int N)              // create N-by-N grid, with all sites blocked
    public void open(int i, int j)         // open site (row i, column j) if it is not already
@@ -32,7 +32,7 @@ public class Percolation {
    public boolean isFull(int i, int j)    // is site (row i, column j) full?
    public boolean percolates()            // does the system percolate?
 }
-'''
+```
 
 By convention, the indices i and j are integers between 1 and N, where (1, 1) is the upper-left site: Throw a java.lang.IndexOutOfBoundsException if either i or j is outside this range. The constructor should take time proportional to N^2; all methods should take constant time plus a constant number of calls to the union-find methods union(), find(), connected(), and count().
 Monte Carlo simulation. To estimate the percolation threshold, consider the following computational experiment:
@@ -51,7 +51,7 @@ Assuming T is sufficiently large (say, at least 30), the following provides a 95
 95% confidence interval for percolation threshold
 To perform a series of computational experiments, create a data type PercolationStats with the following API.
 
-'''java
+```java
 public class PercolationStats {
    public PercolationStats(int N, int T)    // perform T independent computational experiments on an N-by-N grid
    public double mean()                     // sample mean of percolation threshold
@@ -60,12 +60,12 @@ public class PercolationStats {
    public double confidenceHi()             // returns upper bound of the 95% confidence interval
    public static void main(String[] args)   // test client, described below
 }
-'''
+```
 
 The constructor should throw a java.lang.IllegalArgumentException if either N ≤ 0 or T ≤ 0.
 Also, include a main() method that takes two command-line arguments N and T, performs T independent computational experiments (discussed above) on an N-by-N grid, and prints out the mean, standard deviation, and the 95% confidence interval for the percolation threshold. Use standard random from our standard libraries to generate random numbers; use standard statistics to compute the sample mean and standard deviation.
 
-'''bash
+```bash
 % java PercolationStats 200 100
 mean                    = 0.5929934999999997
 stddev                  = 0.00876990421552567
@@ -86,7 +86,7 @@ stddev                  = 0.11776536521033558
 mean                    = 0.6669475
 stddev                  = 0.11775205263262094
 95% confidence interval = 0.666217665216461, 0.6676773347835391
-'''
+```
 
 Analysis of running time and memory usage (optional and not graded). Implement the Percolation data type using the quick-find algorithm [QuickFindUF.java](QuickFindUF.java) from algs4.jar.
 
