@@ -133,14 +133,13 @@ public class Percolation {
 		int index = xyTo1D(i, j);
 		
 		if (i == 1)
-			// connecting to virtualTop if index is in first row
-			grid.union(virtualTop, index);
+			grid.union(virtualTop, index);			// connecting to virtualTop if index is in first row
 		if (isValid(i, j-1) && isOpen(i, j-1))
-			grid.union(xyTo1D(i,j-1), index);	// connecting index to left node if open
+			grid.union(xyTo1D(i,j-1), index);		// connecting index to left node if open
 		if (isValid(i, j+1) && isOpen(i, j+1))
-			grid.union(xyTo1D(i,j+1), index);	// connecting index to right node if open
+			grid.union(xyTo1D(i,j+1), index);		// connecting index to right node if open
 		if (isValid(i-1, j) && isOpen(i-1, j))
-			grid.union(xyTo1D(i-1,j), index);	// connecting index to top node if open
+			grid.union(xyTo1D(i-1,j), index);		// connecting index to top node if open
 		if (isValid(i+1, j) && isOpen(i+1, j))
 			grid.union(xyTo1D(i+1, j), index);	// connecting index to bottom node if open
 	}
