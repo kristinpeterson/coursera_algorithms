@@ -78,6 +78,24 @@ public class PercolationStats {
 		return mean() + ( ( 1.96 * stddev() ) / Math.sqrt(T) );
 	}
 	
+	/**
+	 * Test client, instantiates PercolationStats based on
+	 * command line arguments, runs mean(), stddev(),
+	 * confidenceLo() & confidenceHi().
+	 * @param args command line arguments
+	 */
+	public static void main(String[] args)
+	{
+		int N = new Integer(args[0]);
+		int T = new Integer(args[1]);
+		
+		PercolationStats stats = new PercolationStats( N, T );
+		
+		System.out.println("mean:\t\t\t\t = " + stats.mean());
+		System.out.println("stddev:\t\t\t\t = " + stats.stddev());
+		System.out.println("95% confidence interval:\t = " + stats.confidenceLo() + ", " + stats.confidenceHi() );
+	}
+
 	// PRIVATE HELPER METHODS
 	
 	//	Opens a random node, if the chosen random node is already open
@@ -96,24 +114,6 @@ public class PercolationStats {
 			isOpen = grid.isOpen( randomRow, randomCol );
 		}
 		grid.open( randomRow, randomCol );
-	}
-	
-	/**
-	 * Test client, instantiates PercolationStats based on
-	 * command line arguments, runs mean(), stddev(),
-	 * confidenceLo() & confidenceHi().
-	 * @param args command line arguments
-	 */
-	public static void main(String[] args)
-	{
-		int N = new Integer(args[0]);
-		int T = new Integer(args[1]);
-		
-		PercolationStats stats = new PercolationStats( N, T );
-		
-		System.out.println("mean:\t\t\t\t = " + stats.mean());
-		System.out.println("stddev:\t\t\t\t = " + stats.stddev());
-		System.out.println("95% confidence interval:\t = " + stats.confidenceLo() + ", " + stats.confidenceHi() );
 	}
 
 }
