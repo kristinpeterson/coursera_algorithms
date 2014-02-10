@@ -1,14 +1,12 @@
 # [Percolation](http://coursera.cs.princeton.edu/algs4/assignments/percolation.html)
-======
 
 ## Dependencies
 
 * [stdlib.jar](http://algs4.cs.princeton.edu/code/stdlib.jar)
 * [algs4.jar](http://algs4.cs.princeton.edu/code/algs4.jar)
 
-------
 ## Programming Assignment 1: Percolation
-------
+
 
 Write a program to estimate the value of the percolation threshold via Monte Carlo simulation.
 
@@ -26,7 +24,7 @@ When N is sufficiently large, there is a threshold value p* such that when p < p
 
 Percolation data type. To model a percolation system, create a data type Percolation with the following API:
 
-'''
+'''java
 public class Percolation {
    public Percolation(int N)              // create N-by-N grid, with all sites blocked
    public void open(int i, int j)         // open site (row i, column j) if it is not already
@@ -53,7 +51,7 @@ Assuming T is sufficiently large (say, at least 30), the following provides a 95
 95% confidence interval for percolation threshold
 To perform a series of computational experiments, create a data type PercolationStats with the following API.
 
-'''
+'''java
 public class PercolationStats {
    public PercolationStats(int N, int T)    // perform T independent computational experiments on an N-by-N grid
    public double mean()                     // sample mean of percolation threshold
@@ -67,7 +65,7 @@ public class PercolationStats {
 The constructor should throw a java.lang.IllegalArgumentException if either N ≤ 0 or T ≤ 0.
 Also, include a main() method that takes two command-line arguments N and T, performs T independent computational experiments (discussed above) on an N-by-N grid, and prints out the mean, standard deviation, and the 95% confidence interval for the percolation threshold. Use standard random from our standard libraries to generate random numbers; use standard statistics to compute the sample mean and standard deviation.
 
-'''
+'''bash
 % java PercolationStats 200 100
 mean                    = 0.5929934999999997
 stddev                  = 0.00876990421552567
