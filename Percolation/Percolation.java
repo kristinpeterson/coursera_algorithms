@@ -12,7 +12,7 @@
  *
  */
 public class Percolation {
-	
+
 	private WeightedQuickUnionUF grid;
 	private WeightedQuickUnionUF fullness;
 	private int N;						// number of nodes in grid = (NxN)
@@ -21,9 +21,12 @@ public class Percolation {
 	private int virtualBottom;
 	   
 	/**
-	 * Initializes an empty Percolation grid of N by N WeightedQuickUnionFindUF objects
+	 * Initializes an empty Percolation grid of N by N WeightedQuickUnionUF objects
 	 * with 2 additional nodes designated as a virtual top and virtual bottom.  These
 	 * virtual nodes allow for more efficient determination of percolation status.
+	 * An additional WeightedQuickUnionUF object (fullness) is created which will
+	 * only be connected to the virtual top, to avoid backwash when fullness reaches
+	 * the bottom row.
 	 * <p>
 	 * All nodes are initially set to be "blocked," as recorded in the open array of 
 	 * boolean values
@@ -70,7 +73,12 @@ public class Percolation {
 	}
 	
 	/**
-	 * Checks if a given node is full.
+	 * Checks if a given node is full, i.e. connected to the top row.
+	 * This is checked against the fullness WeightedQuickUnionUF object, 
+	 * which is NOT connected to the virtual bottom.  
+	 * <p>
+	 * This prevents backwash - false fullness in nodes that are connected
+	 * to the bottom row but not connected to the top row.
 	 * @param i the row of the node being checked
 	 * @param j the column of the node being checked
 	 * @return true if the node is full
@@ -83,7 +91,7 @@ public class Percolation {
 	
 	/**
 	 * Checks if the Percolation object percolates, by checking if the virtual top node
-	 * is connected to the virtual bottom node. 
+	 * is connected to the virtual bottom node in the WeightedQuickUnionUF grid object.
 	 * @return true if the system does percolate
 	 */
 	public boolean percolates()
