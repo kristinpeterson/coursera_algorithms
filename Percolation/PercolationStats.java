@@ -22,18 +22,18 @@ public class PercolationStats {
 	 */
 	public PercolationStats(int N, int T)
 	{
-		if( N <= 0 || T <= 0 ) 
+		if(N<=0 || T<=0) 
 			throw new IllegalArgumentException("N & T must be greater than 0.");
 		
 		this.N = N;
 		this.T = T;
 		results = new double[T];
 		
-		for( int i = 0; i < T; i++ )
+		for(int i=0;i< T;i++)
 		{
-			Percolation grid = new Percolation( N );
+			Percolation grid = new Percolation(N);
 			int result = 0;
-			while( !grid.percolates() )
+			while(!grid.percolates())
 			{
 				openRandomBlockedNode(grid);
 				result++;
@@ -66,7 +66,7 @@ public class PercolationStats {
 	 */
 	public double confidenceLo()
 	{
-		return mean() - ( ( 1.96 * stddev() ) / Math.sqrt(T) );
+		return mean()-((1.96*stddev())/Math.sqrt(T));
 	}
   
 	/**
@@ -75,7 +75,27 @@ public class PercolationStats {
 	 */
 	public double confidenceHi()
 	{
-		return mean() + ( ( 1.96 * stddev() ) / Math.sqrt(T) );
+		return mean()+((1.96*stddev())/Math.sqrt(T));
+	}
+	
+	// PRIVATE HELPER METHODS
+	
+	//	Opens a random node, if the chosen random node is already open
+	//	searches until a blocked node is found and opens it.
+	//	@param grid the Percolation grid to search
+	private void openRandomBlockedNode(Percolation grid)
+	{
+		boolean isOpen = true;
+		int randomRow = 0;
+		int randomCol = 0;
+		while(isOpen)
+		{
+			randomRow = StdRandom.uniform(1,N+1);
+			randomCol = StdRandom.uniform(1,N+1);
+			
+			isOpen = grid.isOpen(randomRow,randomCol);
+		}
+		grid.open(randomRow,randomCol);
 	}
 	
 	/**
@@ -89,31 +109,11 @@ public class PercolationStats {
 		int N = new Integer(args[0]);
 		int T = new Integer(args[1]);
 		
-		PercolationStats stats = new PercolationStats( N, T );
+		PercolationStats stats = new PercolationStats(N,T);
 		
 		System.out.println("mean:\t\t\t\t = " + stats.mean());
 		System.out.println("stddev:\t\t\t\t = " + stats.stddev());
-		System.out.println("95% confidence interval:\t = " + stats.confidenceLo() + ", " + stats.confidenceHi() );
-	}
-
-	// PRIVATE HELPER METHODS
-	
-	//	Opens a random node, if the chosen random node is already open
-	//	searches until a blocked node is found and opens it.
-	//	@param grid the Percolation grid to search
-	private void openRandomBlockedNode(Percolation grid)
-	{
-		boolean isOpen = true;
-		int randomRow = 0;
-		int randomCol = 0;
-		while( isOpen )
-		{
-			randomRow = StdRandom.uniform(N) + 1;
-			randomCol = StdRandom.uniform(N) + 1;
-			
-			isOpen = grid.isOpen( randomRow, randomCol );
-		}
-		grid.open( randomRow, randomCol );
+		System.out.println("95% confidence interval:\t = " + stats.confidenceLo() + ", " + stats.confidenceHi());
 	}
 
 }

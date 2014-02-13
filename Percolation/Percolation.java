@@ -12,12 +12,14 @@
  *
  */
 public class Percolation {
-
+	
 	private WeightedQuickUnionUF grid;
-	private int N;  // number of nodes in grid = (NxN)
-	private boolean[] open;  // true == open, false == blocked
+	private WeightedQuickUnionUF fullness;
+	private int N;						// number of nodes in grid = (NxN)
+	private boolean[] open;				// true == open, false == blocked
 	private int virtualTop;
-
+	private int virtualBottom;
+	   
 	/**
 	 * Initializes an empty Percolation grid of N by N WeightedQuickUnionFindUF objects
 	 * with 2 additional nodes designated as a virtual top and virtual bottom.  These
@@ -26,13 +28,17 @@ public class Percolation {
 	 * All nodes are initially set to be "blocked," as recorded in the open array of 
 	 * boolean values
 	 * @param N the number of nodes in a single row/column
+	 * @throws IllegalArgumentException if N <= 0
 	 */
-	public Percolation(int N)
+	public Percolation(int N) throws IllegalArgumentException
 	{
+		if(N<=0) throw new IllegalArgumentException("N cannot be less than or equal to 0.");
 		this.N = N;
-		grid = new WeightedQuickUnionUF((N*N)+2);
-		open = new boolean[(N*N)+2];
-		virtualTop = xyTo1D(N, N) + 1;
+		grid = new WeightedQuickUnionUF(N*N+2);
+		fullness = new WeightedQuickUnionUF(N*N+1);
+		open = new boolean[N*N];
+		virtualTop = xyTo1D(N,N) + 1;
+		virtualBottom = xyTo1D(N,N) + 2;
 	}
 	
 	/**
@@ -43,12 +49,12 @@ public class Percolation {
 	 */
 	public void open(int i, int j)
 	{	
-		if (isOpen(i, j))
+		if (isOpen(i,j))
 			return;
 		validateIndices(i,j);
 		// opens site at (i, j)
 		open[xyTo1D(i,j)] = true;
-		connectWithSurroundingOpenSites(i, j);
+		connectWithSurroundingOpenSites(i,j);
 	}
 	
 	/**
@@ -59,8 +65,8 @@ public class Percolation {
 	 */
 	public boolean isOpen(int i, int j)
 	{	
-		validateIndices(i, j);
-		return open[xyTo1D(i, j)];
+		validateIndices(i,j);
+		return open[xyTo1D(i,j)] == true;
 	}
 	
 	/**
@@ -71,8 +77,8 @@ public class Percolation {
 	 */
 	public boolean isFull(int i, int j)
 	{	
-		validateIndices(i, j);
-		return grid.connected(virtualTop, xyTo1D(i, j));	
+		validateIndices(i,j);
+		return fullness.connected(xyTo1D(i,j), virtualTop);	
 	}
 	
 	/**
@@ -82,12 +88,7 @@ public class Percolation {
 	 */
 	public boolean percolates()
 	{
-		for(int i = 1; i <= N; i++)
-		{
-			if(grid.connected(virtualTop, xyTo1D(N, i)))
-				return true;
-		}
-		return false;
+		return grid.connected(virtualTop, virtualBottom);
 	}
 	
 	//	PRIVATE HELPER METHODS
@@ -98,7 +99,7 @@ public class Percolation {
 	private int xyTo1D(int i, int j)
 	{
 		validateIndices(i,j);
-		return (int) (( N * (i - 1) + j) - 1);  
+		return (int) ((N*(i-1)+j)-1);  
 	}
 	
 	//	Validates a given nodes row/column values.
@@ -107,7 +108,7 @@ public class Percolation {
 	//	@throws	IndexOutOfBoundsException if the node is not within the Percolation object grid
 	private void validateIndices(int i, int j) throws IndexOutOfBoundsException
 	{
-		if (!isValid(i, j))
+		if(!isValid(i,j))
 			throw new IndexOutOfBoundsException("Invalid indices provided.");
 	}
 	
@@ -120,8 +121,7 @@ public class Percolation {
 		// convert i & j to from 1-indexed row/col to array index values
 		i -= 1;
 		j -= 1;
-		
-		return i >= 0 && j >= 0 && i < N && j < N;
+		return i>=0 && j>=0 && i<N && j<N;
 	}
 	
 	//	Connects node at given row/column with valid surrounding open sites (left/right/top/bottom).
@@ -130,17 +130,45 @@ public class Percolation {
 	//	@param i the row of the node to connect
 	private void connectWithSurroundingOpenSites(int i, int j)
 	{
-		int index = xyTo1D(i, j);
+		int index = xyTo1D(i,j);
 		
-		if (i == 1)
-			grid.union(virtualTop, index);  // connecting to virtualTop if index is in first row
-		if (isValid(i, j-1) && isOpen(i, j-1))
-			grid.union(xyTo1D(i,j-1), index);  // connecting index to left node if open
-		if (isValid(i, j+1) && isOpen(i, j+1))
-			grid.union(xyTo1D(i,j+1), index);  // connecting index to right node if open
-		if (isValid(i-1, j) && isOpen(i-1, j))
-			grid.union(xyTo1D(i-1,j), index);  // connecting index to top node if open
-		if (isValid(i+1, j) && isOpen(i+1, j))
-			grid.union(xyTo1D(i+1, j), index);  // connecting index to bottom node if open
+		if(i == 1)
+		{
+			// connecting node to virtualTop if it is in first row
+			// in grid & fullness UF objects
+			grid.union(virtualTop, index);
+			fullness.union(virtualTop, index);
+		}
+		if(i == N)
+		{
+			// connecting index node to virtualBottom if it is in last row
+			// ONLY for grid UF object
+			// Not connecting for fullness UF object to prevent backwash
+			grid.union(virtualBottom, index);
+		}
+		if(isValid(i,j-1) && isOpen(i,j-1))
+		{
+			// connecting index node to it's left node if open (for grid & fullness)
+			grid.union(xyTo1D(i,j-1), index);
+			fullness.union(xyTo1D(i,j-1), index);
+		}
+		if(isValid(i,j+1) && isOpen(i,j+1))
+		{
+			// connecting index node to right node if open (for grid & fullness)
+			grid.union(xyTo1D(i,j+1), index);
+			fullness.union(xyTo1D(i,j+1),index);
+		}
+		if(isValid(i-1,j) && isOpen(i-1,j))
+		{
+			// connecting index node to top node if open (for grid & fullness)
+			grid.union(xyTo1D(i-1,j), index);
+			fullness.union(xyTo1D(i-1,j),index);
+		}
+		if(isValid(i+1,j) && isOpen(i+1,j))
+		{
+			// connecting index node to bottom node if open (for grid & fullness)
+			grid.union(xyTo1D(i+1,j), index);
+			fullness.union(xyTo1D(i+1,j),index);
+		}
 	}
 }
